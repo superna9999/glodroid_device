@@ -18,12 +18,17 @@ endif
 DEPLOY_FILES := \
 	$(DEPLOY_TOOLS) \
 	$(DEPLOY_BOOTLOADER) \
-	$(PRODUCT_OUT)/flash-sd.sh \
-	$(PRODUCT_OUT)/deploy-sd.img \
 	$(PRODUCT_OUT)/boot.img \
 	$(PRODUCT_OUT)/boot_dtbo.img \
 	$(PRODUCT_OUT)/super.img \
 	$(PRODUCT_OUT)/deploy-gpt.img \
+
+ifneq ($(PRODUCT_BOARD_PLATFORM),amlogic)
+DEPLOY_FILES += \
+	$(PRODUCT_OUT)/flash-sd.sh \
+	$(PRODUCT_OUT)/deploy-sd.img \
+
+endif
 
 ifneq ($(PRODUCT_HAS_EMMC),)
 DEPLOY_FILES += \
@@ -49,11 +54,14 @@ $(PRODUCT_OUT)/deploy-sd-for-emmc.img: $(GENSDIMG) $(DEPLOY_BOOTLOADER) $(PRODUC
 $(PRODUCT_OUT)/deploy-gpt.img: $(PRODUCT_OUT)/deploy-sd.img $(GENSDIMG)
 	dd if=$< of=$@ bs=1k count=128
 
+# Amlogic bootloader can't live with GPT, thus SDCard can only be used are recovery
+ifneq ($(PRODUCT_BOARD_PLATFORM),amlogic)
 $(PRODUCT_OUT)/sdcard.img: $(GENSDIMG)
 	$(call pretty,"Creating sdcard image...")
 	$(NATIVE_PATH) $< -C=$(PRODUCT_OUT) -T=SD -P=$(PRODUCT_BOARD_PLATFORM) $@
 
 sdcard: droid $(PRODUCT_OUT)/sdcard.img
+endif
 
 $(PRODUCT_OUT)/images.tar.gz: $(DEPLOY_FILES)
 	cp $(DEPLOY_TOOLS) $(PRODUCT_OUT)

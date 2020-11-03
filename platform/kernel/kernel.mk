@@ -12,6 +12,9 @@ endif
 ifeq ($(PRODUCT_BOARD_PLATFORM),broadcom)
 KERNEL_SRC		:= kernel/glodroid-broadcom
 endif
+ifeq ($(PRODUCT_BOARD_PLATFORM),amlogic)
+KERNEL_SRC		:= kernel/glodroid-sunxi
+endif
 
 KERNEL_FRAGMENTS	:= \
     $(LOCAL_PATH)/android-base.config \
