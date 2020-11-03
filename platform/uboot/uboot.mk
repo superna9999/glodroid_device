@@ -56,9 +56,16 @@ UBOOT_BINARY := $(UBOOT_OUT)/u-boot.bin
 RPI_FIRMWARE_DIR := vendor/raspberry/firmware
 endif
 
-$(UBOOT_BINARY): $(UBOOT_FRAGMENTS) $(UBOOT_FRAGMENT_SD) $(UBOOT_FRAGMENT_EMMC) $(sort $(shell find -L $(UBOOT_SRC))) $(ATF_BINARY)
-	@echo "Building U-Boot: "
-	@echo "TARGET_PRODUCT = " $(TARGET_PRODUCT):
+ifeq ($(PRODUCT_BOARD_PLATFORM),amlogic)
+UBOOT_FRAGMENTS	+= device/glodroid/platform/common/amlogic/uboot.config
+UBOOT_FRAGMENT_EMMC :=
+UBOOT_FRAGMENT_SD :=
+POST_PROCESS_SCRIPT := device/glodroid/platform/common/amlogic/post-process-bootloader.sh
+UBOOT_BINARY := $(UBOOT_OUT)/u-boot.bin
+endif
+
+$(UBOOT_BINARY): $(UBOOT_FRAGMENTS) $(UBOOT_FRAGMENT_SD) $(UBOOT_FRAGMENT_EMMC) $(sort $(shell find -L $(UBOOT_SRC)))
+	@echo "Building $(UBOOT_DEFCONFIG) U-Boot: "
 	mkdir -p $(UBOOT_OUT)
 	$(UMAKE) $(UBOOT_DEFCONFIG)
 	PATH=/usr/bin:/bin $(UBOOT_SRC)/scripts/kconfig/merge_config.sh -m -O $(UBOOT_OUT)/ $(UBOOT_OUT)/.config $(UBOOT_FRAGMENTS) $(UBOOT_FRAGMENT_SD)
@@ -124,6 +131,14 @@ $(PRODUCT_OUT)/bootloader-sd.img: $(UBOOT_BINARY) $(BOOT_FILES) $(OVERLAY_FILES)
 	/usr/bin/mcopy -i $@ $(BOOT_FILES) ::
 	/usr/bin/mmd -i $@ ::overlays
 	/usr/bin/mcopy -i $@ $(OVERLAY_FILES) ::overlays/
+endif
+
+ifeq ($(PRODUCT_BOARD_PLATFORM),amlogic)
+$(PRODUCT_OUT)/bootloader-emmc.img: $(UBOOT_BINARY)
+	$(POST_PROCESS_SCRIPT) $(AMLOGIC_FIP_FILES) $(AMLOGIC_FIP_SOC_FAMILY) $@ $<.emmc EMMC
+
+$(PRODUCT_OUT)/bootloader-sd.img: $(UBOOT_BINARY)
+	$(POST_PROCESS_SCRIPT) $(AMLOGIC_FIP_FILES) $(AMLOGIC_FIP_SOC_FAMILY) $@ $<.sd SD
 endif
 
 ifneq ($(PRODUCT_HAS_EMMC),)

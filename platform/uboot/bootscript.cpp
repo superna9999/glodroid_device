@@ -20,13 +20,21 @@ setenv loadaddr 0x50008000
 setenv dtboaddr 0x52008000
 #endif
 
+#ifdef platform_amlogic
+setenv dtbaddr 0x01000000
+setenv loadaddr 0x01080000
+setenv dtboaddr 0x08200000
+#endif
+
 setenv    main_fdt_id 0x100
 setenv overlay_fdt_id 0xFFF
 
 /* EMMC cards have 512k erase block size. Align partitions accordingly to avoid issues with erasing. */
 
 setenv partitions "uuid_disk=\${uuid_gpt_disk}"
+#ifndef platform_amlogic
 EXTENV(partitions, ";name=bootloader,start=128K,size=130944K,uuid=\${uuid_gpt_bootloader}")
+#endif
 EXTENV(partitions, ";name=uboot-env,size=512K,uuid=\${uuid_gpt_reserved}")
 EXTENV(partitions, ";name=recovery_boot,size=32M,uuid=\${uuid_gpt_boot_recovery}")
 EXTENV(partitions, ";name=misc,size=512K,uuid=\${uuid_gpt_misc}")
@@ -86,8 +94,8 @@ FUNC_BEGIN(bootcmd_start)
   FEXTENV(bootargs, " androidboot.force_normal_boot=1") ;
  fi;
  abootimg addr \$loadaddr
- abootimg get recovery_dtbo dtbo_addr
- adtimg addr \${dtbo_addr}
+ abootimg get recovery_dtbo dtboaddr
+ adtimg addr \${dtboaddr}
 #ifdef platform_sunxi
 #ifdef device_pinephone
 /* Select proper DTS version for PinePhone (v1.1 or v1.2) */
@@ -104,6 +112,11 @@ FUNC_BEGIN(bootcmd_start)
 #ifdef platform_broadcom
 /* raspberrypi vc bootloader prepare fdt based on many factors. Use this fdt instead of dtb compiled by the kernel */
  fdt addr \${fdt_addr} &&
+#endif
+#ifdef platform_amlogic
+ adtimg get dt --id=\$main_fdt_id dtb_start dtb_size main_fdt_index &&
+ cp.b \$dtb_start \$dtbaddr \$dtb_size &&
+ fdt addr \$dtbaddr &&
 #endif
  adtimg get dt --id=\$overlay_fdt_id dtb_start dtb_size overlay_fdt_index &&
  cp.b \$dtb_start \$dtboaddr \$dtb_size &&
@@ -125,6 +138,16 @@ FUNC_BEGIN(bootcmd_block)
  then
   setenv androidrecovery true ;
  fi;
+#endif
+#ifdef device_vim3l
+ pinmux dev pinctrl@14;
+ pinmux dev pinctrl@40;
+ /* GPIOAO_7: PWR_KEY */
+ gpio input aobus-banks7;
+ if test $? -eq 0;
+ then
+   run enter_fastboot;
+ fi
 #endif
  run bootcmd_bcb &&
  if test STRESC(${androidrecovery}) != STRESC(true);
