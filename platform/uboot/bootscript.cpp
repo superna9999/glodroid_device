@@ -149,6 +149,16 @@ FUNC_BEGIN(bootcmd_block)
    run enter_fastboot;
  fi
 #endif
+#if defined(device_vim2)
+ pinmux dev pinctrl@14;
+ pinmux dev pinctrl@40;
+ /* GPIOAO_2: PWR_KEY */
+ gpio input aobus-banks2;
+ if test $? -eq 0;
+ then
+   run enter_fastboot;
+ fi
+#endif
 #if defined(device_lepotato)
  pinmux dev pinctrl@14;
  pinmux dev pinctrl@4b0;
