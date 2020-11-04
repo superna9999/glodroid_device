@@ -4,7 +4,7 @@
 # Copyright (C) 2020 Roman Stratiienko (r.stratiienko@gmail.com)
 
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/odroid-n2.mk
+    $(LOCAL_DIR)/odroid_n2.mk
 
 COMMON_LUNCH_CHOICES := \
-    odroid-n2-userdebug
+    odroid_n2-userdebug

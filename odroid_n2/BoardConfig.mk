@@ -17,6 +17,6 @@ TARGET_2ND_CPU_ABI := armeabi-v7a
 TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := cortex-a15
 
-TARGET_BOARD_INFO_FILE := device/glodroid/odroid-n2/board-info.txt
+TARGET_BOARD_INFO_FILE := device/glodroid/odroid_n2/board-info.txt
 
 BOARD_GPU_DRIVERS := panfrost kmsro

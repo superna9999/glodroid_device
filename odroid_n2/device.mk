@@ -9,4 +9,4 @@ $(call inherit-product, device/glodroid/common/bluetooth/no-bluetooth.mk)
 DEVICE_TYPE := tv
 
 PRODUCT_COPY_FILES += \
-    device/glodroid/odroid-n2/audio.odroid-n2.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio.odroid-n2.xml
+    device/glodroid/odroid_n2/audio.odroid_n2.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio.odroid_n2.xml
