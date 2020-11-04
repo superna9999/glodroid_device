@@ -7,3 +7,6 @@ $(call inherit-product, device/glodroid/common/device-common.mk)
 $(call inherit-product, device/glodroid/common/bluetooth/no-bluetooth.mk)
 
 DEVICE_TYPE := tv
+
+PRODUCT_COPY_FILES += \
+    device/glodroid/vim3l/audio.vim3l.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio.vim3l.xml \
