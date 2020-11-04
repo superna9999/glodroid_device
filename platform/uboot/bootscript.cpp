@@ -149,6 +149,16 @@ FUNC_BEGIN(bootcmd_block)
    run enter_fastboot;
  fi
 #endif
+#if defined(device_lepotato)
+ pinmux dev pinctrl@14;
+ pinmux dev pinctrl@4b0;
+ /* BOOT11: ALT BOOT MODE */
+ gpio input periphs-banks37;
+ if test $? -eq 0;
+ then
+   run enter_fastboot;
+ fi
+#endif
  run bootcmd_bcb &&
  if test STRESC(${androidrecovery}) != STRESC(true);
  then
