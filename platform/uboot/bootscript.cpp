@@ -139,7 +139,7 @@ FUNC_BEGIN(bootcmd_block)
   setenv androidrecovery true ;
  fi;
 #endif
-#ifdef device_vim3l
+#if defined(device_vim3) || defined(device_vim3l)
  pinmux dev pinctrl@14;
  pinmux dev pinctrl@40;
  /* GPIOAO_7: PWR_KEY */
