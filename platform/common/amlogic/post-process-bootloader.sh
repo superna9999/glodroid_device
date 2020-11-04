@@ -53,7 +53,7 @@ ${FIPDIR}/aml_encrypt_$2 --bl2sig \
 		    --output bl2.n.bin.sig
 if [ -e ${FIPDIR}/lpddr3_1d.fw ]
 then
-	${FIPDIR}/aml_encrypt_g12a --bootmk --output u-boot.bin \
+	${FIPDIR}/aml_encrypt_$2 --bootmk --output u-boot.bin \
 		--bl2 bl2.n.bin.sig \
 		--bl30 bl30_new.bin.enc \
 ￼		--bl31 bl31.img.enc \
@@ -69,7 +69,7 @@ then
 		--ddrfw9 ${FIPDIR}/lpddr3_1d.fw \
 		--level v3
 else
-	${FIPDIR}/aml_encrypt_g12a --bootmk  --output u-boot.bin \
+	${FIPDIR}/aml_encrypt_$2 --bootmk  --output u-boot.bin \
 		--bl2 bl2.n.bin.sig \
 		--bl30 bl30_new.bin.enc \
 		--bl31 bl31.img.enc \
